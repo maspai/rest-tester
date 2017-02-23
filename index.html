@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>REST API Tester</title>
+</head>
+<body>
+	<form style="float: left; width: 40%;">
+		<select name="type">
+			<option>GET</option>
+			<option>POST</option>
+		</select>
+		<input type="url" name="url" required="" style="width:70%">
+		<br>
+		<textarea name="header" rows="2" style="width: 100%" placeholder="Header" title="Header"></textarea>
+		<br>
+		<textarea name="data" rows="5" style="width: 100%" placeholder="Data" title="Data"></textarea>
+		<br>
+		<input type="submit" value="Send">
+	</form>
+	<pre id="result" style="float: left; width: 59%; padding-left: 1%; margin-top: 0;"></pre>
+	<script type="text/javascript" src="jquery-2.2.3.min.js"></script>
+	<script type="text/javascript">
+		$('form').submit(function() {
+			var form = {};
+			$(this).serializeArray().forEach(function(item) {
+				form[item.name] = item.value;
+			});
+			var $res = $('#result');
+			$.ajax({
+				url: form.url,
+				type: form.type,
+				// contentType: false,
+				headers: form.header ? JSON.parse(form.header) : {},
+				data: form.data ? JSON.parse(form.data) : {},
+				// crossDomain: true,
+				beforeSubmit: function() {
+					$res.html('sending..');
+				},
+				success: function(res) {
+					if(res instanceof Object)
+						$res.html(JSON.stringify(res, null, 2));
+					else
+						$res.html(res);
+				},
+				error: function(res) {
+					$res.html(res.status + ' ' + res.statusText);
+				}
+			});
+			return false;
+		});
+	</script>
+</body>
+</html>
